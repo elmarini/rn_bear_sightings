@@ -10,7 +10,7 @@ import Search from '~/containers/Search'
 const navigationConfig = {
   initialRouteName: 'Wizard1',
   headerMode: 'none',
-  //cardStyle: { ...StyleSheet.absoluteFillObject },
+  cardStyle: { ...StyleSheet.absoluteFillObject },
   navigationOptions: ({ navigation }) => ({
     // TODO: fill options
   })

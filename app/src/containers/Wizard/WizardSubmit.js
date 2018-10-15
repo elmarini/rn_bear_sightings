@@ -15,6 +15,7 @@ import Header from '~/components/Header'
 import ProgressBar from '~/components/ProgressBar'
 import colors from '~/themes/colors'
 import api from '~/services/api'
+import Modal from '~/components/Modal'
 
 export default class WizardSubmit extends React.Component {
   constructor(props) {
@@ -25,7 +26,8 @@ export default class WizardSubmit extends React.Component {
       zip: null,
       type: null,
       notes: null,
-      isPickerVisible: false
+      isPickerVisible: false,
+      isModalVisible: false
     }
   }
 
@@ -35,132 +37,129 @@ export default class WizardSubmit extends React.Component {
     })
   }
 
-  onTogglePicker = () => {
+  onToggleProperty = (property) => () => {
     return this.setState({
-      isPickerVisible: !this.state.isPickerVisible
+      [property]: !this.state[property]
     })
   }
 
   onSubmit = () => {
+    this.onToggleProperty('isModalVisible')()
     api.post({
       quantity: this.state.quantity,
       zip: this.state.zip,
       type: this.state.type,
       notes: this.state.notes
     })
-    return this.props.navigation.navigate('Search')
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        this.props.navigation.navigate('Search')
+        resolve()
+      }, 1000)
+    })
+    .then(() => this.onToggleProperty('isModalVisible')())
   }
 
   render() {
     return (
-      <KeyboardAvoidingView
-        style={{ flex: 1, borderWidth: 10 }}
-        behaviour="padding"
-      >
-       <View
-         style={{ flex: 1, backgroundColor: 'green', flexGrow: 0}}
-       >
-
-
-        {/*
-        <View style={styles.daveBG}>
-          <Image
-            source={require('~/assets/submitSighting.png')}
-            style={styles.dave}
-          />
-        <Text style={styles.bubbleText}>
-          Daves are a rare breed, but because they are team players, they are often found together.
-        </Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.numberLabel}>
-            Number of Daves
-          </Text>
-          <Text style={styles.zipLabel}>
-            Zip Code
-          </Text>
-          <TextInput
-            style={styles.number}
-            onChangeText={this.onChange('quantity')}
-            value={this.state.quantity}
-          />
-          <TextInput
-            style={styles.zip}
-            onChangeText={this.onChange('zip')}
-            value={this.state.zip}
-          />
-        </View>
-
-        <View style={styles.pickerText}>
-          <Text>
-            {this.state.type || 'Type of Dave'}
-          </Text>
-          <TouchableOpacity onPress={this.onTogglePicker}>
-              <Image source={require('~/assets/iconCaret.png')} />
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.notes}
-          onChangeText={this.onChange('notes')}
-          value={this.state.notes}
-          placeholder="Notes"
-        />
-      <View style={{ height: 60}} />
-        <TouchableHighlight
-          onPress={() =>{}}
-          style={styles.button}
+      <View style={{flex: 1}}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior="position"
+          enabled
         >
-          <Text style={styles.buttonText}>
-            Submit Dave Sighting
-          </Text>
-        </TouchableHighlight>
-        <Header>
-          <ProgressBar
-            progress={90}
-            style={styles.progressBar}
-          />
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Wizard4')}>
+        <ScrollView>
+          <View style={styles.daveBG}>
             <Image
-              source={require('~/assets/iconLeftarrowWhite.png')}
-              style={styles.arrow}
+              source={require('~/assets/submitSighting.png')}
+              style={styles.dave}
             />
-          </TouchableOpacity>
-        </Header>
-        {this.state.isPickerVisible &&
-         <View style={styles.pickerWrapper}>
-            <Picker
-              style={styles.picker}
-              selectedValue={this.state.type}
-              onValueChange={this.onChange('type')}
-            >
-              <Picker.Item label="Life Saver" value="lifesaver" />
-              <Picker.Item label="Racer" value="racer" />
-              <Picker.Item label="Reporter" value="reporter" />
-              <Picker.Item label="Buddy" value="buddy" />
-            </Picker>
-            <TouchableOpacity
-              onPress={this.onTogglePicker}
-              style={styles.pickerCloseButton}
-            >
-              <Text>X</Text>
+          <Text style={styles.bubbleText}>
+            Daves are a rare breed, but because they are team players, they are often found together.
+          </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.numberLabel}>
+              Number of Daves
+            </Text>
+            <Text style={styles.zipLabel}>
+              Zip Code
+            </Text>
+            <TextInput
+              style={styles.number}
+              onChangeText={this.onChange('quantity')}
+              value={this.state.quantity}
+            />
+            <TextInput
+              style={styles.zip}
+              onChangeText={this.onChange('zip')}
+              value={this.state.zip}
+            />
+          </View>
+
+          <View style={styles.pickerText}>
+            <Text>
+              {this.state.type || 'Type of Dave'}
+            </Text>
+            <TouchableOpacity onPress={this.onToggleProperty('isPickerVisible')}>
+                <Image source={require('~/assets/iconCaret.png')} />
             </TouchableOpacity>
           </View>
-        }
-
-        */}
-
-
-        <TextInput
-          style={{
-            marginTop:400,
-            backgroundColor: 'white',
-            height: 60
-          }}
-          onChangeText={this.onChange('quantity')}
-          value={this.state.quantity}
+          <TextInput
+            style={styles.notes}
+            onChangeText={this.onChange('notes')}
+            value={this.state.notes}
+            placeholder="Notes"
+            multiline
+            numberOfLines={5}
+          />
+          <TouchableHighlight
+            onPress={this.onSubmit}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>
+              Submit Dave Sighting
+            </Text>
+          </TouchableHighlight>
+          <Header>
+            <ProgressBar
+              progress={90}
+              style={styles.progressBar}
+            />
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('Wizard4')}>
+              <Image
+                source={require('~/assets/iconLeftarrowWhite.png')}
+                style={styles.arrow}
+              />
+            </TouchableOpacity>
+          </Header>
+          {this.state.isPickerVisible &&
+           <View style={styles.pickerWrapper}>
+              <Picker
+                style={styles.picker}
+                selectedValue={this.state.type}
+                onValueChange={this.onChange('type')}
+              >
+                <Picker.Item label="Life Saver" value="lifesaver" />
+                <Picker.Item label="Racer" value="racer" />
+                <Picker.Item label="Reporter" value="reporter" />
+                <Picker.Item label="Buddy" value="buddy" />
+              </Picker>
+              <TouchableOpacity
+                onPress={this.onToggleProperty('isPickerVisible')}
+                style={styles.pickerCloseButton}
+              >
+                <Text>X</Text>
+              </TouchableOpacity>
+            </View>
+          }
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <Modal
+          visible={this.state.isModalVisible}
+          onClose={this.onToggleProperty('isModalVisible')}
         />
-    </View>
-      </KeyboardAvoidingView>
+      </View>
     )
   }
 }
@@ -168,11 +167,10 @@ export default class WizardSubmit extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
-    backgroundColor: 'red'
+    flex: 1,
   },
   dave: {
-    marginTop: '14%'
+    marginTop: '10%'
   },
   daveBG: {
     paddingTop: '14%',
@@ -180,7 +178,7 @@ const styles = StyleSheet.create({
   },
   bubbleText: {
     position: 'absolute',
-    marginTop: '22%',
+    marginTop: '18%',
     padding: '14%',
   },
   picker: {
@@ -270,15 +268,15 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   button: {
-    position: 'absolute',
     backgroundColor: colors.lightishGreen,
     borderRadius: 5,
-    height: '10%',
+    height: 60,
     alignItems: 'center',
     justifyContent: 'center',
     width: '94%',
-    left: '3%',
-    bottom: '5%'
+    alignSelf: 'center',
+    marginTop: 21,
+    marginBottom: 21
   },
   progressBar: {
     height: 10

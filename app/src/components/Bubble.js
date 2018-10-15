@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     marginBottom: '5%',
-    paddingRight: '5%',
-    paddingLeft: '5%'
+    paddingRight: 25,
+    paddingLeft: 25,
+    textAlign: 'center'
   }
 })

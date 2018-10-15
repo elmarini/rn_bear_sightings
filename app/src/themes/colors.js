@@ -6,5 +6,7 @@ export default {
   pinkishGrey: "rgba(189,189,189,1)",
   milkChocolate: "rgba(137,75,33,1)",
   lightGray: "rgba(238, 238, 238, 1)",
-  blueberry: "rgba(67,44,137,1)"
+  blueberry: "rgba(67,44,137,1)",
+  darkGray: "rgba(41,42,42,0.8)",
+  warmGray: "rgba(158,158,158,1)"
 }
